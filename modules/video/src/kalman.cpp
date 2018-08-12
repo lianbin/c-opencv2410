@@ -219,23 +219,27 @@ KalmanFilter::KalmanFilter(int dynamParams, int measureParams, int controlParams
     init(dynamParams, measureParams, controlParams, type);
 }
 
+//DP 状态变量的维度
+//MP 测量的维度
+//CP 控制的维度
+//type 数据类型
 void KalmanFilter::init(int DP, int MP, int CP, int type)
 {
     CV_Assert( DP > 0 && MP > 0 );
     CV_Assert( type == CV_32F || type == CV_64F );
     CP = std::max(CP, 0);
 
-    statePre = Mat::zeros(DP, 1, type);
-    statePost = Mat::zeros(DP, 1, type);
-    transitionMatrix = Mat::eye(DP, DP, type);
+    statePre = Mat::zeros(DP, 1, type); //预测
+    statePost = Mat::zeros(DP, 1, type);//更新
+    transitionMatrix = Mat::eye(DP, DP, type);//状态转移矩阵
 
-    processNoiseCov = Mat::eye(DP, DP, type);
-    measurementMatrix = Mat::zeros(MP, DP, type);
-    measurementNoiseCov = Mat::eye(MP, MP, type);
+    processNoiseCov = Mat::eye(DP, DP, type);     //状态方程的噪声
+    measurementMatrix = Mat::zeros(MP, DP, type); //测量矩阵 
+    measurementNoiseCov = Mat::eye(MP, MP, type); //测量的噪声协方差矩阵
 
-    errorCovPre = Mat::zeros(DP, DP, type);
-    errorCovPost = Mat::zeros(DP, DP, type);
-    gain = Mat::zeros(DP, MP, type);
+    errorCovPre = Mat::zeros(DP, DP, type); //预测的协方差矩阵
+    errorCovPost = Mat::zeros(DP, DP, type);//更新之后的协方差矩阵
+    gain = Mat::zeros(DP, MP, type);  //增益矩阵      
 
     if( CP > 0 )
         controlMatrix = Mat::zeros(DP, CP, type);
